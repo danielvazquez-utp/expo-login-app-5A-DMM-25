@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
@@ -11,11 +11,14 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 
+import { useFetch } from '../hooks/useFetch';
+
 export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const { getData, setData } = useFetch();
 
-  const onLoginPressed = () => {
+  const onLoginPressed = async() => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -23,10 +26,24 @@ export function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
-    })
+    const usuario = await setData('http://localhost:3000/api/users/byNickname', {nickname:email.value});
+    if (usuario.error) return;
+    const { data } = usuario;
+    console.log(usuario);
+    if (data.length>0) {
+      if (data[0].password == password.value) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        });
+      }
+      else{
+        console.log('La contraseña es incorrecta')
+      }
+    }
+    else{
+      console.log('El usuario no existe');
+    }
   }
 
   return (
@@ -35,7 +52,7 @@ export function LoginScreen({ navigation }) {
       <Logo />
       <Header>Welcome back.</Header>
       <TextInput
-        label="Email"
+        label="Correo"
         returnKeyType="next"
         value={email.value}
         onChangeText={(text) => setEmail({ value: text, error: '' })}
@@ -47,7 +64,7 @@ export function LoginScreen({ navigation }) {
         keyboardType="email-address"
       />
       <TextInput
-        label="Password"
+        label="Contraseña"
         returnKeyType="done"
         value={password.value}
         onChangeText={(text) => setPassword({ value: text, error: '' })}
@@ -59,16 +76,16 @@ export function LoginScreen({ navigation }) {
         <TouchableOpacity
           onPress={() => navigation.navigate('ResetPasswordScreen')}
         >
-          <Text style={styles.forgot}>Forgot your password?</Text>
+          <Text style={styles.forgot}>Olvidé mi contraseña</Text>
         </TouchableOpacity>
       </View>
       <Button mode="contained" onPress={onLoginPressed}>
         Login
       </Button>
       <View style={styles.row}>
-        <Text>Don’t have an account? </Text>
+        <Text>¿No tienes una cuenta? </Text>
         <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
-          <Text style={styles.link}>Sign up</Text>
+          <Text style={styles.link}>Crear una</Text>
         </TouchableOpacity>
       </View>
     </Background>
