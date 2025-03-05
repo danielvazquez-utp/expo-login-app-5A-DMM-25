@@ -12,21 +12,46 @@ import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
 
+import { useFetch } from '../hooks/useFetch';
+
 export function RegisterScreen({ navigation }) {
   const [name, setName] = useState({ value: '', error: '' })
+  const [lastName, setLastName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
-  const onSignUpPressed = () => {
+  const { getData, setData } = useFetch();
+
+  const onSignUpPressed = async() => {
     const nameError = nameValidator(name.value)
+    const lastNameError = nameValidator(lastName.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError) {
+    if (emailError || lastNameError || passwordError || nameError) {
       setName({ ...name, error: nameError })
+      setLastName({ ...name, error: lastNameError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
       return
     }
+
+    const usuario = await getData('http://localhost:3000/api/users/byNick/' + email.value);
+    if (usuario.error) return;
+    const { data } = usuario;
+    if( data.length>0 ) return;
+
+    const nuevoUsuario = {
+      name: name.value,
+      lastName: lastName.value,
+      nickname: email.value,
+      password: password.value,
+      profile: 1,
+      state: 1
+    }
+
+    const nuevo = await setData('http://localhost:3000/api/users/add', nuevoUsuario );
+    if (nuevo.error) return;
+    
     navigation.reset({
       index: 0,
       routes: [{ name: 'Dashboard' }],
@@ -37,9 +62,9 @@ export function RegisterScreen({ navigation }) {
     <Background>
       <BackButton goBack={navigation.goBack} />
       <Logo />
-      <Header>Create Account</Header>
+      <Header>Crear una cuenta</Header>
       <TextInput
-        label="Name"
+        label="Nombre"
         returnKeyType="next"
         value={name.value}
         onChangeText={(text) => setName({ value: text, error: '' })}
@@ -47,7 +72,15 @@ export function RegisterScreen({ navigation }) {
         errorText={name.error}
       />
       <TextInput
-        label="Email"
+        label="Apellidos"
+        returnKeyType="next"
+        value={lastName.value}
+        onChangeText={(text) => setLastName({ value: text, error: '' })}
+        error={!!lastName.error}
+        errorText={lastName.error}
+      />
+      <TextInput
+        label="Correo"
         returnKeyType="next"
         value={email.value}
         onChangeText={(text) => setEmail({ value: text, error: '' })}
@@ -59,7 +92,7 @@ export function RegisterScreen({ navigation }) {
         keyboardType="email-address"
       />
       <TextInput
-        label="Password"
+        label="Contraseña"
         returnKeyType="done"
         value={password.value}
         onChangeText={(text) => setPassword({ value: text, error: '' })}
@@ -72,12 +105,12 @@ export function RegisterScreen({ navigation }) {
         onPress={onSignUpPressed}
         style={{ marginTop: 24 }}
       >
-        Sign Up
+        Crear
       </Button>
       <View style={styles.row}>
-        <Text>Already have an account? </Text>
+        <Text>¿Ya tiene una cuenta? </Text>
         <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
-          <Text style={styles.link}>Login</Text>
+          <Text style={styles.link}>Entrar aquí</Text>
         </TouchableOpacity>
       </View>
     </Background>
