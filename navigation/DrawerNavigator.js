@@ -10,9 +10,8 @@ import { ScanScreen } from '../screens/ScanScreen';
 
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigator = () => {
+export const DrawerNavigator = () => {
   return (
-    <NavigationContainer>
       <Drawer.Navigator>
         <Drawer.Screen
           name="dashbord"
@@ -50,8 +49,5 @@ const DrawerNavigator = () => {
           options={{ title: 'Escanear' }}
         />
       </Drawer.Navigator>
-    </NavigationContainer>
   );
 };
-
-export default DrawerNavigator;
