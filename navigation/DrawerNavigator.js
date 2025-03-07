@@ -19,12 +19,12 @@ export const DrawerNavigator = () => {
           options={{ title: 'Menú principal' }}
         />
         <Drawer.Screen
-          name="article"
+          name="items"
           component={ ArticlesScreen }
           options={{ title: 'Artículos' }}
         />
         <Drawer.Screen
-          name="person"
+          name="persons"
           component={ PersonScreen }
           options={{ title: 'Personas' }}
         />
