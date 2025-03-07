@@ -23,9 +23,9 @@ export function Dashboard({ navigation }) {
         justifyContent: 'space-around',
         marginVertical:10
       }}>
-        <IonicButton color='white' />
-        <IonicButton name='person' text='Personas' color='white' />
-        <IonicButton name='business' text='Ubicaciones' color='white' />
+        <IonicButton color='white' onPress={ ()=> navigation.navigate('items') } />
+        <IonicButton name='person' text='Personas' color='white' onPress={ ()=> navigation.navigate('persons') } />
+        <IonicButton name='business' text='Ubicaciones' color='white' onPress={ ()=> navigation.navigate('places') } />
       </View>
 
       <View style={{
@@ -33,9 +33,9 @@ export function Dashboard({ navigation }) {
         justifyContent: 'space-around',
         marginVertical:10
       }}>
-        <IonicButton name='shield-checkmark' text='Asignaciones' color='white' />
-        <IonicButton name='bag-check' text='Inventario' color='white' />
-        <IonicButton name='scan-circle' text='Escanear' color='white' />
+        <IonicButton name='shield-checkmark' text='Asignaciones' color='white' onPress={ ()=> navigation.navigate('assigments') } />
+        <IonicButton name='bag-check' text='Inventario' color='white' onPress={ ()=> navigation.navigate('inventary') } />
+        <IonicButton name='scan-circle' text='Escanear' color='white' onPress={ ()=> navigation.navigate('scan') } />
       </View>
 
       <Button
